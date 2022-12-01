@@ -18,8 +18,16 @@ const walletSlice = createSlice({
     addOutcome(state, action: PayloadAction<number>) {
       state.outcome.push(action.payload);
     },
-    updateBalance(state, action: PayloadAction<number>) {
-      state.balance = action.payload;
+    updateBalance(state) {
+      const totalIncome = state.income.reduce((total, value) => {
+        return total + value;
+      }, 0);
+
+      const totalOutcome = state.outcome.reduce((total, value) => {
+        return total + value;
+      }, 0);
+      const balance = totalIncome - totalOutcome;
+      state.balance = balance;
     },
     // addContact(state, action: PayloadAction<ContactType>) {
     //   const index = state.items.findIndex(

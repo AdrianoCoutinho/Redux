@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   addIncome,
@@ -23,61 +23,56 @@ import {
 
 const Home: React.FC = () => {
   const [valor, setValor] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(0);
   const [type, setType] = useState<string>("income");
   const walletRedux = useAppSelector((state) => state.wallet);
   const dispatch = useAppDispatch();
 
-  const total = () => {
-    const totalIncome = walletRedux.income.reduce((total, value) => {
-      return total + value;
-    }, 0);
-
-    const totalOutcome = walletRedux.outcome.reduce((total, value) => {
-      return total + value;
-    }, 0);
-    return totalIncome - totalOutcome;
-  };
-
   const deposito = () => {
+    if (valor <= 0) {
+      alert("Digite um número maior ou igual a zero.");
+      return;
+    }
     if (type === "income") {
       dispatch(addIncome(valor));
-      setBalance(total());
+      dispatch(updateBalance());
       setValor(0);
     } else {
+      if (walletRedux.balance - valor <= -1001) {
+        alert("voce chegou no cheque especial");
+        return;
+      }
       dispatch(addOutcome(valor));
-      setBalance(total());
-
+      dispatch(updateBalance());
       setValor(0);
     }
   };
-
-  // useEffect(() => {
-  //   localStorage.setItem("wallet", JSON.stringify(walletRedux));
-  // }, [walletRedux]);
-
-  useEffect(() => {
-    dispatch(updateBalance(balance));
-    localStorage.setItem("wallet", JSON.stringify(walletRedux));
-  }, [balance, dispatch, walletRedux]);
 
   return (
     <React.Fragment>
       <Container
         sx={{
           height: "100vh",
-          backgroundColor: "#c9c9c9",
+          backgroundColor: "rgba(255,255,255,0.7)",
         }}
       >
         <Grid container>
           <Grid item xs={12}>
             <Grid container>
-              <Grid item xs={12}>
+              <Grid
+                item
+                sx={{
+                  textAlign: "center",
+                }}
+                xs={12}
+              >
                 <h1>Carteira Growdev</h1>
-              </Grid>
-              <Grid item sx={{ fontSize: "45px" }} xs={12}>
-                <AccountBalanceWalletIcon fontSize="large" /> R$
-                {balance}
+
+                <Typography variant="h3">
+                  <AccountBalanceWalletIcon fontSize="large" /> R$
+                  {walletRedux.balance}
+                </Typography>
+                <h2>SALDO + LIMITE</h2>
+                <h2>R${walletRedux.balance + 1000}</h2>
               </Grid>
             </Grid>
           </Grid>
