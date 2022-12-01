@@ -83,7 +83,6 @@ const Home: React.FC = () => {
               fullWidth
               variant="filled"
               type="number"
-              value={valor}
               onChange={(ev) => setValor(Number(ev.target.value))}
             />
           </Grid>
